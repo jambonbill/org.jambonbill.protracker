@@ -1,0 +1,34 @@
+<!-- Amiga Protracker module player for Web Audio (c) 2012-2013 Firehawk/TDA (firehawk@haxor.fi) -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Protracker module player for Web Audio</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+  </head>
+<body>
+
+<div class='container'>
+<h1>protracker.jambonbill.org</h1>
+<pre>
+module.load(filename);
+module.play();
+module.pause();
+module.jump(1);//next pattern
+module.jump(-1);//pref pattern
+module.setrepeat(bool);
+module.stop();
+
+//events
+module.onReady=function(){...}
+module.onPlay=function(){...}
+module.onStop=function(){...}
+</pre>
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/pt.js"></script>
+<script src='js/interface.js'></script>
+</script>
