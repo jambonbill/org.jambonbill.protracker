@@ -2,37 +2,70 @@ var timer;
 var module=new Protracker();
 
 $(function(){
-  module.load('mods/andy-tak.mod');
-  module.setautostart(true);
-  //module.load('mods/nao-chip_n_gabbe.mod');
-  
-  
+  //module.load('mods/andy-tak.mod');
+  module.load('mods/beathawk-cloze_doze.mod');
+  module.setautostart(true);  
   /*
   var loadInterval=setInterval(function(){
       if (!module.delayload) {
          clearInterval(loadInterval);
       }
     }, 200);
-    
-  
   setTimeout('play()',500);
   */
+    $('#btn_play').click(function(){module.play();});
+    $('#btn_stop').click(function(){module.stop();});
+    $('#btn_back').click(function(){module.jump(-1);});
+    $('#btn_frwd').click(function(){module.jump(1);});
+
   console.log('ready');  
 });
+
+function patternData(mod){
+    
+    var patterns=[];//patterns as json array
+    
+    for(p=0;p<mod.patterns;p++) {
+      var pattern=[];
+      var pp;//, pd="<div class=\"patterndata\" id=\"pattern"+hb(p)+"\">";
+      //for(i=0; i<12; i++) pd+="\n";
+      for(i=0; i<64; i++) {
+        var row=[];
+        pp=i*4*mod.channels;
+        //pd+="<span class=\"patternrow\" id=\"pattern"+hb(p)+"_row"+hb(i)+"\">"+hb(i)+"|";
+        for(c=0;c<mod.channels;c++) {
+          //pd+=notef(mod.note[p][i*mod.channels+c], (mod.pattern[p][pp+0]&0xf0 | mod.pattern[p][pp+2]>>4), mod.pattern[p][pp+2]&0x0f, mod.pattern[p][pp+3], mod.channels);
+          pp+=4;
+          //row[c]=notef(mod.note[p][i*mod.channels+c], (mod.pattern[p][pp+0]&0xf0 | mod.pattern[p][pp+2]>>4), mod.pattern[p][pp+2]&0x0f, mod.pattern[p][pp+3], mod.channels);
+          row.push(notef(mod.note[p][i*mod.channels+c], (mod.pattern[p][pp+0]&0xf0 | mod.pattern[p][pp+2]>>4), mod.pattern[p][pp+2]&0x0f, mod.pattern[p][pp+3], mod.channels));//notef(mod.note[p][i*mod.channels+c], (mod.pattern[p][pp+0]&0xf0 | mod.pattern[p][pp+2]>>4), mod.pattern[p][pp+2]&0x0f, mod.pattern[p][pp+3], mod.channels);
+        }
+        //pd+="</span>\n";
+        //console.log("row:"+row);
+        pattern.push(row);
+      }
+      //for(i=0; i<24; i++) pd+="\n";
+      //pdata+=pd+"</div>";
+      patterns.push(pattern);
+    }
+    //$("#more").html(pdata);
+    return patterns;
+    
+}
 
 module.onReady=function() {  
     
     console.log(this.title);
      
-    for(i=0;i<31;i++)
+    for(i=0;i<31;i++){
       console.log(this.sample[i].name);
+    }
     
     console.log(this.signature);
     
-    /*
+    var pdata='';
     for(p=0;p<this.patterns;p++) {
       var pp, pd="<div class=\"patterndata\" id=\"pattern"+hb(p)+"\">";
-      for(i=0; i<12; i++) pd+="\n";
+      //for(i=0; i<12; i++) pd+="\n";
       for(i=0; i<64; i++) {
         pp=i*4*this.channels;
         pd+="<span class=\"patternrow\" id=\"pattern"+hb(p)+"_row"+hb(i)+"\">"+hb(i)+"|";
@@ -42,12 +75,15 @@ module.onReady=function() {
         }
         pd+="</span>\n";
       }
-      for(i=0; i<24; i++) pd+="\n";
+      
+      //for(i=0; i<24; i++) pd+="\n";
+      pd+="-----------------------------------------------\n";
       pdata+=pd+"</div>";
     }
-    $("#modpattern").html(pdata);
-    */
+    $("#more").html(pdata);
+    
     console.log("module ready");
+    $('#status').val("module ready");
   };
 
   module.onPlay=function() {
@@ -58,7 +94,8 @@ module.onReady=function() {
       var i,c;
       var mod=module;
       if (mod.paused) return;
-      console.log(mod.speed, mod.bpm, mod.position, mod.row);
+      $('#status').val("Pattern: "+mod.position +" - Step:"+ mod.row);
+      //console.log(mod.speed, mod.bpm, mod.position, mod.row);
       /*
       if (oldpos != mod.position) {
         if (oldpos>=0) $("#pattern"+hb(mod.patterntable[oldpos])).removeClass("currentpattern");
@@ -90,7 +127,7 @@ module.onReady=function() {
 module.onStop=function(){ 
     clearInterval(timer);
     console.log('stopped');
-    $("#modtimer").html("stopped");
+    $("#status").val("stopped");
 }
 
 

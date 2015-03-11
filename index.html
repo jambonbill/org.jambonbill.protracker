@@ -7,26 +7,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Protracker module player for Web Audio</title>
     <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
   </head>
 <body>
 
 <div class='container'>
-<h1>protracker.jambonbill.org</h1>
-<pre>
-module.load(filename);
-module.play();
-module.pause();
-module.jump(1);//next pattern
-module.jump(-1);//pref pattern
-module.setrepeat(bool);
-module.stop();
+<h1><i class='fa fa-music'></i> Amiga module player</h1>
+<hr />
 
-//events
-module.onReady=function(){...}
-module.onPlay=function(){...}
-module.onStop=function(){...}
-</pre>
+<div class="btn-group" role="group">
+  
+  <button type="button" class="btn btn-default" id='btn_back'><i class='fa fa-step-backward'></i></button>
+  <button type="button" class="btn btn-default" id='btn_play'><i class='fa fa-play'></i></button>
+  <button type="button" class="btn btn-default" id='btn_stop'><i class='fa fa-stop'></i></button>
+  <button type="button" class="btn btn-default" id='btn_frwd'><i class='fa fa-step-forward'></i></button>
+  
+</div>
+
+<input type="text" id='status' class='form-control'>
+
+<pre id='more'></pre>
 
 <script type="text/javascript" src="js/jquery.min.js"></script>
 <script type="text/javascript" src="js/pt.js"></script>

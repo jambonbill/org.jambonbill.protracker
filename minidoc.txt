@@ -1,0 +1,12 @@
+module.load(filename);
+module.play();
+module.pause();
+module.jump(1);//next pattern
+module.jump(-1);//pref pattern
+module.setrepeat(bool);
+module.stop();
+
+//events
+module.onReady=function(){...}
+module.onPlay=function(){...}
+module.onStop=function(){...}
