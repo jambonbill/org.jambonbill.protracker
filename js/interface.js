@@ -1,26 +1,35 @@
 var timer;
+var filename;
 var module=new Protracker();
 
+
 $(function(){
-  //module.load('mods/andy-tak.mod');
-  module.load('mods/beathawk-cloze_doze.mod');
   module.setautostart(true);  
-  /*
-  var loadInterval=setInterval(function(){
-      if (!module.delayload) {
-         clearInterval(loadInterval);
-      }
-    }, 200);
-  setTimeout('play()',500);
-  */
-    $('#btn_play').click(function(){module.play();});
-    $('#btn_stop').click(function(){module.stop();});
-    $('#btn_back').click(function(){module.jump(-1);});
-    $('#btn_frwd').click(function(){module.jump(1);});
+  $.ajax({url: "ctrl.php", success: function(fn){
+        filename=fn;
+        $('#status').val("Loading "+fn);
+        module.load(fn);
+        
+  }});
+
+  $('#btn_play').click(function(){module.play();});
+  $('#btn_stop').click(function(){module.stop();});
+  $('#btn_back').click(function(){module.jump(-1);});
+  $('#btn_frwd').click(function(){module.jump(1);});
+  $('#btn_load').click(function(){
+    $.ajax({url: "ctrl.php", success: function(fn){
+      filename=fn;
+      $('#status').val("Loading "+fn);
+      module.load(fn);
+    }});
+  });
 
   console.log('ready');  
 });
 
+
+
+/*
 function patternData(mod){
     
     var patterns=[];//patterns as json array
@@ -51,84 +60,79 @@ function patternData(mod){
     return patterns;
     
 }
-
+*/
 module.onReady=function() {  
     
     console.log(this.title);
-     
+    $('#title').html(this.title+" <small>"+filename+"</small>");
+    
     for(i=0;i<31;i++){
-      console.log(this.sample[i].name);
+      console.log(this.sample[i].name,this.sample[i].length,this.sample[i].finetune,this.sample[i].volume,this.sample[i].loopstart,this.sample[i].looplength);
     }
     
-    console.log(this.signature);
+    //console.log(this.signature);//M.K.
     
+    var json=[];
     var pdata='';
     for(p=0;p<this.patterns;p++) {
+      var pattern=[];
       var pp, pd="<div class=\"patterndata\" id=\"pattern"+hb(p)+"\">";
       //for(i=0; i<12; i++) pd+="\n";
       for(i=0; i<64; i++) {
+        var row=[];
         pp=i*4*this.channels;
         pd+="<span class=\"patternrow\" id=\"pattern"+hb(p)+"_row"+hb(i)+"\">"+hb(i)+"|";
         for(c=0;c<this.channels;c++) {
-          pd+=notef(this.note[p][i*this.channels+c], (this.pattern[p][pp+0]&0xf0 | this.pattern[p][pp+2]>>4), this.pattern[p][pp+2]&0x0f, this.pattern[p][pp+3], this.channels);
+          var note=this.note[p][i*this.channels+c];
+          var cell=notef(this.note[p][i*this.channels+c], (this.pattern[p][pp+0]&0xf0 | this.pattern[p][pp+2]>>4), this.pattern[p][pp+2]&0x0f, this.pattern[p][pp+3], this.channels);
+          
+          pd+=cell;
           pp+=4;
+          row.push(note);
         }
         pd+="</span>\n";
+        pattern.push(row);
       }
-      
+      json[p]=pattern;
       //for(i=0; i<24; i++) pd+="\n";
       pd+="-----------------------------------------------\n";
       pdata+=pd+"</div>";
     }
+    
     $("#more").html(pdata);
     
     console.log("module ready");
+    console.log(json);
     $('#status').val("module ready");
   };
 
-  module.onPlay=function() {
-    var oldpos=-1, oldrow=-1;
-    console.log('playing');
-    
-    timer=setInterval(function(){
-      var i,c;
-      var mod=module;
-      if (mod.paused) return;
-      $('#status').val("Pattern: "+mod.position +" - Step:"+ mod.row);
-      //console.log(mod.speed, mod.bpm, mod.position, mod.row);
-      /*
-      if (oldpos != mod.position) {
-        if (oldpos>=0) $("#pattern"+hb(mod.patterntable[oldpos])).removeClass("currentpattern");
-        $("#pattern"+hb(mod.patterntable[mod.position])).addClass("currentpattern");
-      }
-      if (oldrow != mod.row) {
-        $("#modtimer").replaceWith("<span id=\"modtimer\">"+
-          "pos <span class=\"hl\">"+hb(mod.position)+"</span>/<span class=\"hl\">"+hb(mod.songlen)+"</span> "+
-          "row <span class=\"hl\">"+hb(mod.row)+"</span>/<span class=\"hl\">3f</span> "+
-          "speed <span class=\"hl\">"+mod.speed+"</span> "+
-          "bpm <span class=\"hl\">"+mod.bpm+"</span> "+
-          "filter <span class=\"hl\">"+(mod.filter ? "on" : "off")+"</span>"+
-          "</span>");
 
-        $("#modsamples").children().removeClass("activesample");      
-        for(c=0;c<mod.channels;c++)
-          if (mod.channel[c].noteon) $("#sample"+hb(mod.channel[c].sample+1)).addClass("activesample");
-          
-        if (oldpos>=0 && oldrow>=0) $("#pattern"+hb(mod.patterntable[oldpos])+"_row"+hb(oldrow)).removeClass("currentrow");
-        $("#pattern"+hb(mod.patterntable[mod.position])+"_row"+hb(mod.row)).addClass("currentrow");
-        $("#pattern"+hb(mod.patterntable[mod.position])).scrollTop(mod.row*16);
-      }
-      oldpos=mod.position;        
-      oldrow=mod.row;
-      */
-    }, 80.0); // half display update speed for iOS
-  };
+
+module.onTick=function(){
+  //console.log('tick++');
+  //$('#status').val("Pattern: "+module.position +" - Step:"+ module.row);
+  var p=module.position;
+  var i=module.row;
+  var row=[];
+  
+  pp=i*4*this.channels;
+    
+  for(c=0;c<this.channels;c++) {
+    if(!this.note[p])continue;
+    var note=this.note[p][i*this.channels+c];
+    var cell=notef2(this.note[p][i*this.channels+c], (this.pattern[p][pp+0]&0xf0 | this.pattern[p][pp+2]>>4), this.pattern[p][pp+2]&0x0f, this.pattern[p][pp+3], this.channels);
+    row.push(cell);
+  }
+
+  $('#status').val(module.row+"|"+row.join('|'));
+}
 
 module.onStop=function(){ 
     clearInterval(timer);
     console.log('stopped');
     $("#status").val("stopped");
 }
+
 
 
 
@@ -187,6 +191,24 @@ function notef(n,s,c,d,cc)
                 (c&d ? ("<span class=\"command\">"+c.toString(16)+hb(d)+"</span>"):("...")))
          );
 }
+
+function notef2(n,s,c,d,cc)
+{
+  if (cc<8)
+    return (n ? (notelist[n%12]+Math.floor(1+n/12)) : ("... "))+
+      (s ? (hb(s)) : (".. "))+
+      c.toString(16)+hb(d);
+  if (cc<12)
+    return (n ? (notelist[n%12]+Math.floor(1+n/12)) : ("..."))+
+      (s ? (hb(s)) : (".."))+
+      c.toString(16)+hb(d);
+  return (n ? (notelist[n%12]+Math.floor(1+n/12)) : 
+                (s ? (hb(s)) :
+                (c&d ? (c.toString(16)+hb(d)):("...")))
+         );
+}
+
+
 
 function hb(n)
 {

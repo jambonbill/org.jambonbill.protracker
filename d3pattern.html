@@ -1,0 +1,85 @@
+<!-- Amiga Protracker module player for Web Audio (c) 2012-2013 Firehawk/TDA (firehawk@haxor.fi) -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Protracker module player for Web Audio</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <style>
+    svg{background-color:#eee;}
+    </style>
+  </head>
+<body>
+
+<div class='container'>
+<h1><i class='fa fa-music'></i> Protracker pattern in d3 <small>64x4notes</small></h1>
+<hr />
+
+<div class="btn-group" role="group">  
+  <button type="button" class="btn btn-default" id='btn_back'><i class='fa fa-step-backward'></i></button>
+  <button type="button" class="btn btn-default" id='btn_play'><i class='fa fa-play'></i></button>
+  <button type="button" class="btn btn-default" id='btn_stop'><i class='fa fa-stop'></i></button>
+  <button type="button" class="btn btn-default" id='btn_frwd'><i class='fa fa-step-forward'></i></button>
+</div>
+
+<div id='chart'></div>
+
+<script type="text/javascript" src="js/d3.min.js"></script>
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/pt.js"></script>
+<script>
+var width = 400,
+    height = 640;
+
+// Create the SVG container, and apply a transform such that the origin is the
+// center of the canvas. This way, we don't need to position arcs individually.
+var svg = d3.select("#chart").append("svg")
+    .attr("width", width)
+    .attr("height", height)
+
+
+//produce a fake pattern
+function pattern(){
+  var dat=[];
+  for(var i=0;i<64;i++){
+    var r=[];
+    for(var c=0;c<4;c++){
+      var note=Math.floor(Math.random()*32);//note
+      var sample=Math.floor(Math.random()*6);//samplen
+      r[c]={'note':note,'sample':sample};
+    }
+    dat.push(r);
+  }
+  return dat;
+}
+
+function update(){
+  svg.selectAll("rect").data(pattern())
+    .enter()
+    .append("rect")
+    .attr("class","rect")
+    .attr("fill",function(d,i){
+      if(i%2==0)return '#fff';
+      return '#000';
+      //return color(i);
+    })
+    .attr("x",function(d,i){
+      return 10;
+    })
+    .attr("y",function(d,i){
+      return i*10;
+    })
+    .attr("width",function(d,i){
+      return 20;
+    })
+    .attr("height",function(d,i){
+      return 10;
+    });
+}
+
+update();
+</script>

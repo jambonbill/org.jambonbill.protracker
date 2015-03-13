@@ -13,11 +13,11 @@
 <body>
 
 <div class='container'>
-<h1><i class='fa fa-music'></i> Amiga module player</h1>
+<h1 id='title'><i class='fa fa-music'></i> Amiga module player</h1>
 <hr />
 
 <div class="btn-group" role="group">
-  
+  <button type="button" class="btn btn-default" id='btn_load'><i class='fa fa-retweet'></i></button>
   <button type="button" class="btn btn-default" id='btn_back'><i class='fa fa-step-backward'></i></button>
   <button type="button" class="btn btn-default" id='btn_play'><i class='fa fa-play'></i></button>
   <button type="button" class="btn btn-default" id='btn_stop'><i class='fa fa-stop'></i></button>
@@ -25,7 +25,12 @@
   
 </div>
 
-<input type="text" id='status' class='form-control'>
+<div class="btn-group pull-right" role="group">
+  <button type="button" class="btn btn-default" id='btn_fav'><i class='fa fa-star'></i></button>
+  <button type="button" class="btn btn-default" id='btn_trash'><i class='fa fa-trash'></i></button>
+</div>
+
+<input type="text" id='status' class='form-control' style='font-family:monospace'>
 
 <pre id='more'></pre>
 

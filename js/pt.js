@@ -92,7 +92,7 @@ function Protracker()
   this.onReady=function(){};
   this.onPlay=function(){};
   this.onStop=function(){};
-
+  this.onTick=function(){};
   this.context = null;
   this.samplerate=44100;
   this.bufferlen=2048;
@@ -565,6 +565,7 @@ Protracker.prototype.advance=function(mod) {
         mod.patternwait++;
       } else {
         mod.row++; mod.tick=0; mod.flags|=2; mod.patterndelay=0;
+
       }
     }
     else {
@@ -589,6 +590,9 @@ Protracker.prototype.advance=function(mod) {
         mod.tick=0;
       } else {
         mod.row++; mod.tick=0; mod.flags|=2;
+        //console.log('mod.row++;');
+        //todo :: hook here
+        this.onTick();
       }
     }
   }
