@@ -4,7 +4,7 @@ var module=new Protracker();
 
 
 $(function(){
-  module.setautostart(true);  
+  //module.setautostart(true);  
   $.ajax({url: "ctrl.php", success: function(fn){
         filename=fn;
         $('#status').val("Loading "+fn);
@@ -24,9 +24,70 @@ $(function(){
     }});
   });
 
+  $('#btn_favorite').click(function(){
+    console.log('favorite');
+  });
+
+  $('#btn_download').click(function(){
+    console.log('download '+filename);
+    /*
+    $.ajax({url: "ctrl.php?download", success: function(fn){
+      filename=fn;
+      $('#status').val("Loading "+fn);
+      module.load(fn);
+    }});
+  */
+  });
+
+  $("input[name='amigatype']").change(function(){
+    //console.log('amigatype.click change',$(this).val());
+    if($(this).val()=="PAL")module.setamigatype(true); else module.setamigatype(false);
+  });
+  
+  $("input[name='stereo']").change(function(){
+    //console.log('stereo.click',$(this).val());
+    module.setseparation($(this).val());
+  });
+
   console.log('ready');  
 });
 
+
+
+//compute a html sample table
+function sampleTable()
+{
+  var htm=[];
+  htm.push("<table class='table table-condensed'>");
+  htm.push("<thead>");
+  htm.push("<th>#</th>");
+  htm.push("<th>Sample name</th>");
+  htm.push("<th>Len</th>");
+  //htm.push("<th>Finetune</th>");
+  //htm.push("<th>Vol</th>");
+  //htm.push("<th>Loopstart</th>");
+  //htm.push("<th>Looplen</th>");
+  htm.push("</thead>");
+  htm.push("<tbody>");
+  
+  for(var i=0;i<31;i++){
+    if(module.sample[i].length<1)continue;
+    htm.push("<tr>");
+    htm.push("<td>"+i);
+    htm.push("<td>"+module.sample[i].name);
+    htm.push("<td>"+module.sample[i].length);
+    //htm.push("<td>"+module.sample[i].finetune);
+    //htm.push("<td>"+module.sample[i].volume);
+    //htm.push("<td>"+module.sample[i].loopstart);
+    //htm.push("<td>"+module.sample[i].looplength);
+    
+    //console.log(this.sample[i].name,this.sample[i].length,this.sample[i].finetune,this.sample[i].volume,this.sample[i].loopstart,this.sample[i].looplength);
+  }
+  //
+  htm.push("</tbody>");
+  htm.push("</table>");
+  return htm.join("");
+}
 
 
 /*
@@ -67,11 +128,13 @@ module.onReady=function() {
     $('#title').html(this.title+" <small>"+filename+"</small>");
     
     for(i=0;i<31;i++){
-      console.log(this.sample[i].name,this.sample[i].length,this.sample[i].finetune,this.sample[i].volume,this.sample[i].loopstart,this.sample[i].looplength);
+      //console.log(this.sample[i].name,this.sample[i].length,this.sample[i].finetune,this.sample[i].volume,this.sample[i].loopstart,this.sample[i].looplength);
     }
     
     //console.log(this.signature);//M.K.
     
+    //todo :: compute module stats (notes/sample/chords)
+
     var json=[];
     var pdata='';
     for(p=0;p<this.patterns;p++) {
@@ -99,11 +162,12 @@ module.onReady=function() {
       pdata+=pd+"</div>";
     }
     
-    $("#more").html(pdata);
+    //$("#more").html(pdata);
+    $("#more").html(sampleTable());
     
-    console.log("module ready");
-    console.log(json);
-    $('#status').val("module ready");
+    //console.log("module ready");
+    //console.log(json);
+    //$('#status').val("module ready");
   };
 
 
@@ -210,8 +274,9 @@ function notef2(n,s,c,d,cc)
 
 
 
-function hb(n)
+function hb(n)//to hex
 {
+  if(!n)return '00';
   var s=n.toString(16);
   if (s.length==1) s='0'+s;
   return s;

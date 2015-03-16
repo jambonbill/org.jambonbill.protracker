@@ -3,7 +3,14 @@ module.play();
 module.pause();
 module.jump(1);//next pattern
 module.jump(-1);//pref pattern
+
+module.setautostart = function(st)
 module.setrepeat(bool);
+module.setseparation();// (0=paula, 1=betterpaula (60/40), 2=mono)
+module.setamigatype = function(clock);// (false=NTSC, true=PAL)
+module.setamigamodel();// "600"||"1200"||"4000"
+
+module.clearsong()
 module.stop();
 
 //events
