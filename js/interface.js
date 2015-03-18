@@ -58,33 +58,45 @@ $(function(){
 function sampleTable()
 {
   var htm=[];
-  htm.push("<table class='table table-condensed'>");
+  htm.push("<table class='table table-condensed table-hover'>");
   htm.push("<thead>");
   htm.push("<th>#</th>");
   htm.push("<th>Sample name</th>");
   htm.push("<th>Len</th>");
   //htm.push("<th>Finetune</th>");
   //htm.push("<th>Vol</th>");
-  //htm.push("<th>Loopstart</th>");
-  //htm.push("<th>Looplen</th>");
+  htm.push("<th>Loopstart</th>");
+  htm.push("<th>Looplen</th>");
   htm.push("</thead>");
   htm.push("<tbody>");
-  
+  var totalbytes=0;
+  var totalsamples=0;
   for(var i=0;i<31;i++){
     if(module.sample[i].length<1)continue;
+    totalsamples++;
+    totalbytes+=module.sample[i].length;
     htm.push("<tr>");
     htm.push("<td>"+i);
     htm.push("<td>"+module.sample[i].name);
-    htm.push("<td>"+module.sample[i].length);
+    htm.push("<td style='text-align:right'>"+module.sample[i].length);
     //htm.push("<td>"+module.sample[i].finetune);
     //htm.push("<td>"+module.sample[i].volume);
-    //htm.push("<td>"+module.sample[i].loopstart);
-    //htm.push("<td>"+module.sample[i].looplength);
+    htm.push("<td style='text-align:right'>"+module.sample[i].loopstart);
+    htm.push("<td style='text-align:right'>"+module.sample[i].looplength);
     
     //console.log(this.sample[i].name,this.sample[i].length,this.sample[i].finetune,this.sample[i].volume,this.sample[i].loopstart,this.sample[i].looplength);
   }
   //
   htm.push("</tbody>");
+  htm.push("<tfoot>");
+  htm.push("<tr>");
+  htm.push("<td>");
+  htm.push("<td>"+totalsamples+" sample(s)");
+  //htm.push("<td style='text-align:right'><b>Total bytes :");
+  htm.push("<td style='text-align:right'><b>"+totalbytes+"b");
+  htm.push("<td><td>");
+  htm.push("</tr>");
+  htm.push("</tfoot>");
   htm.push("</table>");
   return htm.join("");
 }
@@ -122,6 +134,12 @@ function patternData(mod){
     
 }
 */
+
+//stats
+var samples=[];
+var notes=[];
+var chords=[];
+
 module.onReady=function() {  
     
     console.log(this.title);
@@ -162,8 +180,8 @@ module.onReady=function() {
       pdata+=pd+"</div>";
     }
     
-    //$("#more").html(pdata);
-    $("#more").html(sampleTable());
+    $("#more").html("<pre>"+pdata+"</pre>");
+    $("#samples").html(sampleTable());
     
     //console.log("module ready");
     //console.log(json);
