@@ -52,16 +52,35 @@ $(function(){
   console.log('ready');  
 });
 
-
+//draw the pattern sequence table
+function patSeqTable(){
+  var htm=[];
+  htm.push("<table id='patseq' class='table table-condensed table-hover'>");
+  htm.push("<thead>");
+  htm.push("<th>#</th>");
+  htm.push("<th>Pattern</th>");
+  htm.push("</thead>");
+  htm.push("<tbody>");
+  for(var i=0;i<128;i++){
+    if(i>1&&module.patterntable[i]<1)continue;
+    htm.push("<tr>");
+    htm.push("<td>"+i);
+    htm.push("<td style='text-align:right'>"+module.patterntable[i]);
+  }
+  //
+  htm.push("</tbody>");
+  htm.push("</table>");
+  return htm.join("");
+}
 
 //compute a html sample table
 function sampleTable()
 {
   var htm=[];
-  htm.push("<table class='table table-condensed table-hover'>");
+  htm.push("<table id='samples' class='table table-condensed table-hover'>");
   htm.push("<thead>");
   htm.push("<th>#</th>");
-  htm.push("<th>Sample name</th>");
+  //htm.push("<th>Sample name</th>");
   htm.push("<th>Len</th>");
   //htm.push("<th>Finetune</th>");
   //htm.push("<th>Vol</th>");
@@ -77,7 +96,7 @@ function sampleTable()
     totalbytes+=module.sample[i].length;
     htm.push("<tr>");
     htm.push("<td>"+i);
-    htm.push("<td>"+module.sample[i].name);
+    //htm.push("<td>"+module.sample[i].name);
     htm.push("<td style='text-align:right'>"+module.sample[i].length);
     //htm.push("<td>"+module.sample[i].finetune);
     //htm.push("<td>"+module.sample[i].volume);
@@ -180,6 +199,7 @@ module.onReady=function() {
       pdata+=pd+"</div>";
     }
     
+    $("#patterns").html(patSeqTable());
     $("#more").html("<pre>"+pdata+"</pre>");
     $("#samples").html(sampleTable());
     
@@ -197,6 +217,12 @@ module.onTick=function(){
   var i=module.row;
   var row=[];
   
+  $('#pat').html(p+"::"+module.patterntable[p]);
+  $('#pos').html(i);
+  $('#bpm').html("Bpm:"+module.bpm);
+  $('#spd').html("Spd:"+module.speed);
+
+  /*
   pp=i*4*this.channels;
     
   for(c=0;c<this.channels;c++) {
@@ -207,6 +233,7 @@ module.onTick=function(){
   }
 
   $('#status').val(module.row+"|"+row.join('|'));
+  */
 }
 
 module.onStop=function(){ 
