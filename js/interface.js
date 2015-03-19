@@ -1,7 +1,7 @@
 var timer;
 var filename;
 var module=new Protracker();
-
+module.setseparation(1);
 
 $(function(){
   //module.setautostart(true);  
@@ -60,16 +60,16 @@ function drawPattern(m,p){
   
   var pattern=[];
   var pp;
-  var pd="<table class='table table-condensed table-striped'>";
+  var pd="<table id='tracks' class='table table-condensed table-hover'>";
   pd+="<thead>";
   pd+="<th>#</th>";
-  for(c=0;c<m.channels;c++)pd+="<th>Chn#"+(c+1)+"</th>";
+  for(c=0;c<m.channels;c++)pd+="<th style='text-align:center'>Chn#"+(c+1)+"</th>";
   pd+="</thead>";
 
   for(i=0; i<64; i++) {
     
     pp=i*4*m.channels;//pointer
-    pd+="<tr>";
+    pd+="<tr id=pos"+i+">";
     pd+="<td>"+hb(i);//row
     for(c=0;c<m.channels;c++) {
       var note=m.note[p][i*m.channels+c];
@@ -77,7 +77,7 @@ function drawPattern(m,p){
       var cmd=m.pattern[p][pp+2]&0x0f;
       var cmdval=m.pattern[p][pp+3];
       var cell=notef2(note, smpl, cmd, cmdval, m.channels);
-      pd+="<td>"+cell;
+      pd+="<td style='text-align:center'>"+cell;
       pp+=4;
     }
   }
@@ -91,15 +91,14 @@ function patSeqTable(){
   var htm=[];
   htm.push("<table id='patseq' class='table table-condensed table-hover'>");
   htm.push("<thead>");
-  htm.push("<th>#</th>");
+  //htm.push("<th>#</th>");
   htm.push("<th>Pattern</th>");
   htm.push("</thead>");
   htm.push("<tbody>");
   for(var i=0;i<128;i++){
     if(i>1&&module.patterntable[i]<1)continue;
     htm.push("<tr id="+i+">");
-    htm.push("<td>"+i);
-    htm.push("<td style='text-align:right'>"+module.patterntable[i]);
+    htm.push("<td>"+module.patterntable[i]);
   }
   //
   htm.push("</tbody>");
@@ -157,14 +156,16 @@ function sampleTable()
 
 
 //stats
+/*
 var samples=[];
 var notes=[];
 var chords=[];
+*/
 
 module.onReady=function() {  
     
     //console.log(this.title);
-    $('#title').html(this.title+" <small>"+filename+"</small>");
+    $('#title').html("<span title='"+filename+"'>"+this.title+"</span>");
 
     $("#patterns").html(patSeqTable());
     //$("#more").html("<pre>"+pdata+"</pre>");
@@ -175,7 +176,9 @@ module.onReady=function() {
       var id=t.currentTarget.id;
       var pattern=module.patterntable[id];
       this.style.backroundColor="red";
-      console.log("Selected pattern",pattern);
+      
+      console.log("Goto position "+id, pattern);
+      module.position=id;
       drawPattern(module,module.patterntable[id]);
     });
 

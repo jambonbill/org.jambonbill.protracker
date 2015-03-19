@@ -1,25 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Protracker module player for Web Audio</title>
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-    <style>
-    td{font-family:monospace;font-size:12px;}
-    .selected{color:#c00;
-      background-color:#000;
-    }
-    </style>
-  </head>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Protracker module player for Web Audio</title>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+<style>
+body { 
+  padding-top: 60px;
+}
+td{font-family:monospace;font-size:12px;}
+.selected{color:#c00;
+  background-color:#000;
+}
+.table-condensed{
+  background-color:white;
+}
+.table-condensed>tbody>tr>td{
+  padding:0px;
+  border-top: 0;
+}
+</style>
+</head>
 <body>
 
+
+<nav class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="#" id='title'>Brand</a>
+    <p class="navbar-text navbar-right" id='right'></p>
+  </div>
+</nav>
+
+
 <div class='container'>
-<h1><span id='title'><i class='fa fa-music'></i> Amiga module player</span></h1>
-<hr />
 
 
 <div class="form-inline">
@@ -30,7 +47,7 @@
     <button type="button" class="btn btn-sm btn-default" id='btn_stop'><i class='fa fa-stop'></i></button>
     <button type="button" class="btn btn-sm btn-default" id='btn_frwd'><i class='fa fa-step-forward'></i></button>
   </div>
-  
+<!--  
   <div class="input-group">
     <div class="input-group-addon input-sm" id='pat'>Pat</div>
     <div class="input-group-addon input-sm" id='bpm'>Bpm</div>
@@ -57,7 +74,7 @@
       <input type="radio" name="stereo" id="option3" value=2 autocomplete="off"> Mono
     </label>
   </div>
-
+-->
   <div class="btn-group pull-right" role="group">
     <button type="button" class="btn btn-sm btn-default" id='btn_load'><i class='fa fa-retweet'></i></button>
     <button type="button" class="btn btn-sm btn-default" id='btn_open'><i class='fa fa-folder-open'></i></button>

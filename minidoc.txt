@@ -54,4 +54,5 @@ EEx/EFx=PatternDelay by x notes/Invert loop, x=speed
 
 
 // TODO //
+Modifier table-condensed pour que ce soit super condensed
 Suivre la progression du pattern en mode lecture
