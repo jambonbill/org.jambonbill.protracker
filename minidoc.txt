@@ -54,5 +54,4 @@ EEx/EFx=PatternDelay by x notes/Invert loop, x=speed
 
 
 // TODO //
-Ajouter un gitignore
-Ajouter une fenetre modale avec les commandes.
+Suivre la progression du pattern en mode lecture

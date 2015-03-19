@@ -591,6 +591,7 @@ Protracker.prototype.advance=function(mod) {
             mod.flags&=0xe1;
             mod.flags|=2;
             this.onPatternChange();
+            
           }
         }
         mod.tick=0;
@@ -602,7 +603,7 @@ Protracker.prototype.advance=function(mod) {
       }
     }
   }
-  if (mod.row>=64) { mod.position++; mod.row=0; mod.flags|=4; }
+  if (mod.row>=64) { mod.position++; mod.row=0; mod.flags|=4; this.onPatternChange();}
   if (mod.position>=mod.songlen) {
     if (mod.repeat) {
       mod.position=0;

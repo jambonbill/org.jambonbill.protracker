@@ -112,11 +112,11 @@ function sampleTable()
   htm.push("<thead>");
   htm.push("<th>#</th>");
   //htm.push("<th>Sample name</th>");
-  htm.push("<th>Len</th>");
+  htm.push("<th>Size</th>");
   //htm.push("<th>Finetune</th>");
   //htm.push("<th>Vol</th>");
-  htm.push("<th>Loopstart</th>");
-  htm.push("<th>Looplen</th>");
+  htm.push("<th>loop</th>");
+  htm.push("<th>len</th>");
   htm.push("</thead>");
   htm.push("<tbody>");
   var totalbytes=0;
@@ -235,6 +235,7 @@ module.onLoop=function(){
 
 module.onPatternChange=function(){
   console.log("pattern change : "+module.position+"::"+module.patterntable[module.position]);
+  drawPattern(module,module.patterntable[module.position]);
 }
 
 module.onStop=function(){ 
