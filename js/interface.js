@@ -12,7 +12,10 @@ $(function(){
         
   }});
 
-  $('#btn_play').click(function(){module.play();});
+  $('#btn_play').click(function(){
+    drawPattern(module,module.patterntable[module.position]);
+    module.play();
+  });
   $('#btn_stop').click(function(){module.stop();});
   $('#btn_back').click(function(){module.jump(-1);});
   $('#btn_frwd').click(function(){module.jump(1);});
@@ -246,7 +249,7 @@ module.onStop=function(){
 
 
 
-
+/*
 function play(){
   console.log(module.signature);
   console.log('module.sample',module.sample);
@@ -258,7 +261,7 @@ function play(){
   module.setseparation(0);//0,1,2
   module.play();
 }
-
+*/
 
 
 function showPatterns(){
