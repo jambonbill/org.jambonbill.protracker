@@ -93,6 +93,8 @@ function Protracker()
   this.onPlay=function(){};
   this.onStop=function(){};
   this.onTick=function(){};
+  this.onPatternChange=function(){};
+  this.onLoop=function(){};
   this.context = null;
   this.samplerate=44100;
   this.bufferlen=2048;
@@ -210,6 +212,8 @@ Protracker.prototype.play = function()
   this.flags=1+2;
   this.playing=true;
   this.onPlay();
+  this.onTick();
+  //this.onPatternChange();
   this.delayfirst=this.bufferstodelay;
   return true;
 }
@@ -575,6 +579,7 @@ Protracker.prototype.advance=function(mod) {
           mod.row=mod.looprow;
           mod.flags&=0xa1;
           mod.flags|=2;
+          this.onLoop();
         }
         else {
           if (mod.flags&16) { // pattern jump/break?
@@ -585,6 +590,7 @@ Protracker.prototype.advance=function(mod) {
             mod.breakrow=0;
             mod.flags&=0xe1;
             mod.flags|=2;
+            this.onPatternChange();
           }
         }
         mod.tick=0;

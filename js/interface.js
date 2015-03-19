@@ -7,7 +7,7 @@ $(function(){
   //module.setautostart(true);  
   $.ajax({url: "ctrl.php", success: function(fn){
         filename=fn;
-        $('#status').val("Loading "+fn);
+        //$('#status').val("Loading "+fn);
         module.load(fn);
         
   }});
@@ -19,7 +19,7 @@ $(function(){
   $('#btn_load').click(function(){
     $.ajax({url: "ctrl.php", success: function(fn){
       filename=fn;
-      $('#status').val("Loading "+fn);
+      //$('#status').val("Loading "+fn);
       module.load(fn);
     }});
   });
@@ -52,6 +52,37 @@ $(function(){
   console.log('ready');  
 });
 
+
+function drawPattern(m,p){
+  
+  var pattern=[];
+  var pp;
+  var pd="<table class='table table-condensed table-striped'>";
+  pd+="<thead>";
+  pd+="<th>#</th>";
+  for(c=0;c<m.channels;c++)pd+="<th>Chn#"+(c+1)+"</th>";
+  pd+="</thead>";
+
+  for(i=0; i<64; i++) {
+    
+    pp=i*4*m.channels;//pointer
+    pd+="<tr>";
+    pd+="<td>"+hb(i);//row
+    for(c=0;c<m.channels;c++) {
+      var note=m.note[p][i*m.channels+c];
+      var smpl=(m.pattern[p][pp+0]&0xf0 | m.pattern[p][pp+2]>>4);
+      var cmd=m.pattern[p][pp+2]&0x0f;
+      var cmdval=m.pattern[p][pp+3];
+      var cell=notef2(note, smpl, cmd, cmdval, m.channels);
+      pd+="<td>"+cell;
+      pp+=4;
+    }
+  }
+  pd+="</table>\n";
+  $("#more").html(pd);
+}
+
+
 //draw the pattern sequence table
 function patSeqTable(){
   var htm=[];
@@ -63,7 +94,7 @@ function patSeqTable(){
   htm.push("<tbody>");
   for(var i=0;i<128;i++){
     if(i>1&&module.patterntable[i]<1)continue;
-    htm.push("<tr>");
+    htm.push("<tr id="+i+">");
     htm.push("<td>"+i);
     htm.push("<td style='text-align:right'>"+module.patterntable[i]);
   }
@@ -94,8 +125,8 @@ function sampleTable()
     if(module.sample[i].length<1)continue;
     totalsamples++;
     totalbytes+=module.sample[i].length;
-    htm.push("<tr>");
-    htm.push("<td>"+i);
+    htm.push("<tr id='smpl_"+i+"'>");
+    htm.push("<td>"+(i+1));
     //htm.push("<td>"+module.sample[i].name);
     htm.push("<td style='text-align:right'>"+module.sample[i].length);
     //htm.push("<td>"+module.sample[i].finetune);
@@ -121,38 +152,6 @@ function sampleTable()
 }
 
 
-/*
-function patternData(mod){
-    
-    var patterns=[];//patterns as json array
-    
-    for(p=0;p<mod.patterns;p++) {
-      var pattern=[];
-      var pp;//, pd="<div class=\"patterndata\" id=\"pattern"+hb(p)+"\">";
-      //for(i=0; i<12; i++) pd+="\n";
-      for(i=0; i<64; i++) {
-        var row=[];
-        pp=i*4*mod.channels;
-        //pd+="<span class=\"patternrow\" id=\"pattern"+hb(p)+"_row"+hb(i)+"\">"+hb(i)+"|";
-        for(c=0;c<mod.channels;c++) {
-          //pd+=notef(mod.note[p][i*mod.channels+c], (mod.pattern[p][pp+0]&0xf0 | mod.pattern[p][pp+2]>>4), mod.pattern[p][pp+2]&0x0f, mod.pattern[p][pp+3], mod.channels);
-          pp+=4;
-          //row[c]=notef(mod.note[p][i*mod.channels+c], (mod.pattern[p][pp+0]&0xf0 | mod.pattern[p][pp+2]>>4), mod.pattern[p][pp+2]&0x0f, mod.pattern[p][pp+3], mod.channels);
-          row.push(notef(mod.note[p][i*mod.channels+c], (mod.pattern[p][pp+0]&0xf0 | mod.pattern[p][pp+2]>>4), mod.pattern[p][pp+2]&0x0f, mod.pattern[p][pp+3], mod.channels));//notef(mod.note[p][i*mod.channels+c], (mod.pattern[p][pp+0]&0xf0 | mod.pattern[p][pp+2]>>4), mod.pattern[p][pp+2]&0x0f, mod.pattern[p][pp+3], mod.channels);
-        }
-        //pd+="</span>\n";
-        //console.log("row:"+row);
-        pattern.push(row);
-      }
-      //for(i=0; i<24; i++) pd+="\n";
-      //pdata+=pd+"</div>";
-      patterns.push(pattern);
-    }
-    //$("#more").html(pdata);
-    return patterns;
-    
-}
-*/
 
 //stats
 var samples=[];
@@ -161,47 +160,26 @@ var chords=[];
 
 module.onReady=function() {  
     
-    console.log(this.title);
+    //console.log(this.title);
     $('#title').html(this.title+" <small>"+filename+"</small>");
-    
-    for(i=0;i<31;i++){
-      //console.log(this.sample[i].name,this.sample[i].length,this.sample[i].finetune,this.sample[i].volume,this.sample[i].loopstart,this.sample[i].looplength);
-    }
-    
-    //console.log(this.signature);//M.K.
-    
-    //todo :: compute module stats (notes/sample/chords)
 
-    var json=[];
-    var pdata='';
-    for(p=0;p<this.patterns;p++) {
-      var pattern=[];
-      var pp, pd="<div class=\"patterndata\" id=\"pattern"+hb(p)+"\">";
-      //for(i=0; i<12; i++) pd+="\n";
-      for(i=0; i<64; i++) {
-        var row=[];
-        pp=i*4*this.channels;
-        pd+="<span class=\"patternrow\" id=\"pattern"+hb(p)+"_row"+hb(i)+"\">"+hb(i)+"|";
-        for(c=0;c<this.channels;c++) {
-          var note=this.note[p][i*this.channels+c];
-          var cell=notef(this.note[p][i*this.channels+c], (this.pattern[p][pp+0]&0xf0 | this.pattern[p][pp+2]>>4), this.pattern[p][pp+2]&0x0f, this.pattern[p][pp+3], this.channels);
-          
-          pd+=cell;
-          pp+=4;
-          row.push(note);
-        }
-        pd+="</span>\n";
-        pattern.push(row);
-      }
-      json[p]=pattern;
-      //for(i=0; i<24; i++) pd+="\n";
-      pd+="-----------------------------------------------\n";
-      pdata+=pd+"</div>";
-    }
-    
     $("#patterns").html(patSeqTable());
-    $("#more").html("<pre>"+pdata+"</pre>");
+    //$("#more").html("<pre>"+pdata+"</pre>");
+    drawPattern(module,0);
     $("#samples").html(sampleTable());
+    
+    $("#patseq tr").click(function(t){
+      var id=t.currentTarget.id;
+      var pattern=module.patterntable[id];
+      this.style.backroundColor="red";
+      console.log("Selected pattern",pattern);
+      drawPattern(module,module.patterntable[id]);
+    });
+
+    $("#samples tr").click(function(t){
+      var id=t.currentTarget.id;
+      console.log("samples tr click",id);
+    });
     
     //console.log("module ready");
     //console.log(json);
@@ -210,36 +188,59 @@ module.onReady=function() {
 
 
 
+
+
+
+
+// events
+// events
+// events
+
 module.onTick=function(){
   //console.log('tick++');
   //$('#status').val("Pattern: "+module.position +" - Step:"+ module.row);
-  var p=module.position;
+  //var p=module.position;
+  var p=module.patterntable[module.position];
   var i=module.row;
+  var pp=i*4*this.channels;
+
   var row=[];
   
-  $('#pat').html(p+"::"+module.patterntable[p]);
-  $('#pos').html(i);
+  $('#pat').html(module.position+"::"+module.patterntable[module.position]+"::"+i);
   $('#bpm').html("Bpm:"+module.bpm);
   $('#spd').html("Spd:"+module.speed);
 
-  /*
-  pp=i*4*this.channels;
-    
+  var samples=[];
   for(c=0;c<this.channels;c++) {
-    if(!this.note[p])continue;
     var note=this.note[p][i*this.channels+c];
-    var cell=notef2(this.note[p][i*this.channels+c], (this.pattern[p][pp+0]&0xf0 | this.pattern[p][pp+2]>>4), this.pattern[p][pp+2]&0x0f, this.pattern[p][pp+3], this.channels);
-    row.push(cell);
+    var smpl=(this.pattern[p][pp+0]&0xf0 | this.pattern[p][pp+2]>>4);
+    
+    if(note)samples.push(smpl);
+    //var cell=notef2(this.note[p][i*this.channels+c], (this.pattern[p][pp+0]&0xf0 | this.pattern[p][pp+2]>>4), this.pattern[p][pp+2]&0x0f, this.pattern[p][pp+3], this.channels);
+    //row.push(cell);
+    pp+=4;
   }
 
-  $('#status').val(module.row+"|"+row.join('|'));
+  //console.log("#"+i,$.unique(samples));
+  /*
+  $.each($.unique(samples),function(d){
+    console.log("sample:"+d);
+  });
   */
 }
 
+module.onLoop=function(){
+  console.log("loop");
+}
+
+module.onPatternChange=function(){
+  console.log("pattern change : "+module.position+"::"+module.patterntable[module.position]);
+}
+
 module.onStop=function(){ 
-    clearInterval(timer);
-    console.log('stopped');
-    $("#status").val("stopped");
+    //clearInterval(timer);
+    console.log('stop');
+    //$("#status").val("stopped");
 }
 
 
@@ -301,20 +302,16 @@ function notef(n,s,c,d,cc)
          );
 }
 
+//Note, Sample, Command, d?, ChannelCount
 function notef2(n,s,c,d,cc)
 {
-  if (cc<8)
-    return (n ? (notelist[n%12]+Math.floor(1+n/12)) : ("... "))+
-      (s ? (hb(s)) : (".. "))+
-      c.toString(16)+hb(d);
-  if (cc<12)
-    return (n ? (notelist[n%12]+Math.floor(1+n/12)) : ("..."))+
-      (s ? (hb(s)) : (".."))+
-      c.toString(16)+hb(d);
-  return (n ? (notelist[n%12]+Math.floor(1+n/12)) : 
-                (s ? (hb(s)) :
-                (c&d ? (c.toString(16)+hb(d)):("...")))
-         );
+  //console.log('notef2',n,s,c,d,cc);
+  
+  var note=(n ? (notelist[n%12]+Math.floor(1+n/12)) : ("..."));
+  var smpl=(s ? (hb(s)) : (".."));
+  var cmd=c.toString(16)+hb(d);
+  if(cmd=='000')cmd='...';
+  return note+" "+smpl+" "+cmd;
 }
 
 

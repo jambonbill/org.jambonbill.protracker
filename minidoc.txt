@@ -53,6 +53,6 @@ EEx/EFx=PatternDelay by x notes/Invert loop, x=speed
 
 
 
-// TODO ::
-
-Get the number of patterns, and the pattern sequence
+// TODO //
+Ajouter un gitignore
+Ajouter une fenetre modale avec les commandes.

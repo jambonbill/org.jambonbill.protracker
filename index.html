@@ -1,4 +1,3 @@
-<!-- Amiga Protracker module player for Web Audio (c) 2012-2013 Firehawk/TDA (firehawk@haxor.fi) -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -9,17 +8,18 @@
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <style>
+    td{font-family:monospace;font-size:12px;}
+    .selected{color:#c00;
+      background-color:#000;
+    }
+    </style>
   </head>
 <body>
 
 <div class='container'>
-<h1><span id='title'><i class='fa fa-music'></i> Amiga module player</span>
-<small class='pull-right'><i class='fa fa-retweet'></i></small>
-</h1>
+<h1><span id='title'><i class='fa fa-music'></i> Amiga module player</span></h1>
 <hr />
-
-
-
 
 
 <div class="form-inline">
@@ -33,7 +33,6 @@
   
   <div class="input-group">
     <div class="input-group-addon input-sm" id='pat'>Pat</div>
-    <div class="input-group-addon input-sm" id='pos'>Pos</div>
     <div class="input-group-addon input-sm" id='bpm'>Bpm</div>
     <div class="input-group-addon input-sm" id='spd'>Spd</div>
   </div>
@@ -60,23 +59,75 @@
   </div>
 
   <div class="btn-group pull-right" role="group">
+    <button type="button" class="btn btn-sm btn-default" id='btn_load'><i class='fa fa-retweet'></i></button>
+    <button type="button" class="btn btn-sm btn-default" id='btn_open'><i class='fa fa-folder-open'></i></button>
     <button type="button" class="btn btn-sm btn-default" id='btn_favorite'><i class='fa fa-star'></i></button>
     <button type="button" class="btn btn-sm btn-default" id='btn_download'><i class='fa fa-download'></i></button>
+    <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#myModal"><i class='fa fa-question'></i></button>
   </div>
 
 </div>
 
 
-<input type="text" id='status' class='form-control' style='font-family:monospace'>
-
 <div class="row">
-  <div class="col-md-2" id='patterns'>.col-md-6</div>
-  <div class="col-md-6" id='more'>.col-md-6</div>
-  <div class="col-md-4" id='samples'>.col-md-6</div>
+  <div class="col-xs-1" id='patterns'>.col-md-6</div>
+  <div class="col-xs-8" id='more'>.col-md-6</div>
+  <div class="col-xs-3" id='samples'>.col-md-6</div>
 </div>
 
 
+
+
+
+
+<!-- Modal Window -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">Protracker commands</h4>
+      </div>
+      <div class="modal-body">
+        <pre>
+0 - Normal play or Arpeggio             0xy : x-first halfnote add, y-second
+1 - Slide Up                            1xx : upspeed
+2 - Slide Down                          2xx : downspeed
+3 - Tone Portamento                     3xx : up/down speed
+4 - Vibrato                             4xy : x-speed,   y-depth
+5 - Tone Portamento + Volume Slide      5xy : x-upspeed, y-downspeed
+6 - Vibrato + Volume Slide              6xy : x-upspeed, y-downspeed
+7 - Tremolo                             7xy : x-speed,   y-depth
+9 - Set SampleOffset                    9xx : offset (23 -> 2300)
+A - VolumeSlide                         Axy : x-upspeed, y-downspeed
+B - Position Jump                       Bxx : songposition
+C - Set Volume                          Cxx : volume, 00-40
+D - Pattern Break                       Dxx : break position in next patt
+F - Set Speed                           Fxx : speed (00-1F) / tempo (20-FF)
+E9- Retrig Note                         E9x : retrig from note + x vblanks
+
+Other Exx commands:
+-------------------
+E00/1=filter on/off - E1x/2x=FineSlide Up/Down - E30/1=tonep ctrl off/on
+E40/1/2=Vib Waveform sine/rampdown/square, E70/1/2=Tremolo Waveform
+E5x=set loop point,E6x=jump to loop+play x times
+EAx/EBx=Fine volslide up/down
+ECx/EDx=notecut after x vblanks/notedelay by x vblankss
+        </pre>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
 <script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui.js"></script>
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 
