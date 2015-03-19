@@ -1,0 +1,9 @@
+
+nice mods
+---------------------------
+mods/flite-interchip.mod
+
+bugs
+--------------------------------------------------------------
+mods/reflex-bubble_bobble.mod -> slow-down/crash on pattern 4
+mods/flite-interchip.mod ->  pattern 3
