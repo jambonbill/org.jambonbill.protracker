@@ -1,0 +1,17 @@
+body { 
+  padding-top: 60px;
+}
+#position{
+	color:#999;
+}
+td{font-family:monospace;font-size:12px;}
+.selected{color:#c00;
+  background-color:#000;
+}
+.table-condensed{
+  background-color:white;
+}
+.table-condensed>tbody>tr>td{
+  padding:0px;
+  border-top: 0;
+}
