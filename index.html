@@ -8,45 +8,63 @@
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
 <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-<style>
-body { 
-  padding-top: 60px;
-}
-td{font-family:monospace;font-size:12px;}
-.selected{color:#c00;
-  background-color:#000;
-}
-.table-condensed{
-  background-color:white;
-}
-.table-condensed>tbody>tr>td{
-  padding:0px;
-  border-top: 0;
-}
-</style>
+<link rel="stylesheet" href="protracker.css">
 </head>
 <body>
 
 
-<nav class="navbar navbar-default navbar-fixed-top">
+<nav class="navbar navbar-inverse navbar-fixed-top">
   <div class="container">
-    <a class="navbar-brand" href="#" id='title'>Brand</a>
-    <p class="navbar-text navbar-right" id='right'></p>
+    <div class="navbar-brand"><a href="#" id='title' download>protracker</a></div>
+    <span id='position'>0:0:00</span>
+    
+    
+    <!--<p class="navbar-text navbar-right" id='right'></p>-->
+    
+    <div class="btn-group" role="group">
+      <button type="button" class="btn btn-sm btn-default navbar-btn" id='btn_play'><i class='fa fa-play'></i></button>
+      <button type="button" class="btn btn-sm btn-default navbar-btn" id='btn_stop'><i class='fa fa-stop'></i></button>
+    </div>
+
+  <div class="btn-group pull-right" role="group">
+    <button type="button" class="btn btn-sm btn-default" id='btn_load'><i class='fa fa-retweet'></i></button>
+    <button type="button" class="btn btn-sm btn-default" id='btn_open'><i class='fa fa-folder-open'></i></button>
+    <button type="button" class="btn btn-sm btn-default" id='btn_favorite'><i class='fa fa-star'></i></button>
+    <button type="button" class="btn btn-sm btn-default" id='btn_download'><i class='fa fa-download'></i></button>
+    <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#myModal"><i class='fa fa-question'></i></button>
+  </div>
+
   </div>
 </nav>
 
 
 <div class='container'>
-
+<!--
+<nav>
+  <ul class="pagination pagination-sm">
+    <li>
+      <a href="#" aria-label="Previous">
+        <span aria-hidden="true">&laquo;</span>
+      </a>
+    </li>
+    <li><a href="#">1</a></li>
+    <li><a href="#">2</a></li>
+    <li><a href="#">3</a></li>
+    <li><a href="#">4</a></li>
+    <li><a href="#">5</a></li>
+    <li>
+      <a href="#" aria-label="Next">
+        <span aria-hidden="true">&raquo;</span>
+      </a>
+    </li>
+  </ul>
+</nav>
+-->
 
 <div class="form-inline">
    
-  <div class="btn-group" role="group">
-    <button type="button" class="btn btn-sm btn-default" id='btn_back'><i class='fa fa-step-backward'></i></button>
-    <button type="button" class="btn btn-sm btn-default" id='btn_play'><i class='fa fa-play'></i></button>
-    <button type="button" class="btn btn-sm btn-default" id='btn_stop'><i class='fa fa-stop'></i></button>
-    <button type="button" class="btn btn-sm btn-default" id='btn_frwd'><i class='fa fa-step-forward'></i></button>
-  </div>
+
+  
 <!--  
   <div class="input-group">
     <div class="input-group-addon input-sm" id='pat'>Pat</div>
@@ -75,13 +93,7 @@ td{font-family:monospace;font-size:12px;}
     </label>
   </div>
 -->
-  <div class="btn-group pull-right" role="group">
-    <button type="button" class="btn btn-sm btn-default" id='btn_load'><i class='fa fa-retweet'></i></button>
-    <button type="button" class="btn btn-sm btn-default" id='btn_open'><i class='fa fa-folder-open'></i></button>
-    <button type="button" class="btn btn-sm btn-default" id='btn_favorite'><i class='fa fa-star'></i></button>
-    <button type="button" class="btn btn-sm btn-default" id='btn_download'><i class='fa fa-download'></i></button>
-    <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#myModal"><i class='fa fa-question'></i></button>
-  </div>
+
 
 </div>
 

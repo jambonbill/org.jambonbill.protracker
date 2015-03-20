@@ -4,7 +4,7 @@ var module=new Protracker();
 module.setseparation(1);
 
 $(function(){
-  //module.setautostart(true);  
+  module.setautostart(true);  
   $.ajax({url: "ctrl.php", success: function(fn){
         filename=fn;
         //$('#status').val("Loading "+fn);
@@ -16,6 +16,7 @@ $(function(){
     drawPattern(module,module.patterntable[module.position]);
     module.play();
   });
+
   $('#btn_stop').click(function(){module.stop();});
   $('#btn_back').click(function(){module.jump(-1);});
   $('#btn_frwd').click(function(){module.jump(1);});
@@ -27,19 +28,28 @@ $(function(){
     }});
   });
 
+  $('#btn_open').click(function(){
+    module.stop();
+    var url=prompt("Enter module path",filename);
+    if(url){
+      
+      module.load(url);
+      module.setautostart(true);
+    }
+  });
+
   $('#btn_favorite').click(function(){
     console.log('favorite');
   });
-
+  /*
   $('#btn_download').click(function(){
     console.log('download '+filename);
-    /*
     $.ajax({url: "ctrl.php?download", success: function(fn){
       filename=fn;
       $('#status').val("Loading "+fn);
       module.load(fn);
     }});
-  */
+
   });
 
   $("input[name='amigatype']").change(function(){
@@ -51,7 +61,7 @@ $(function(){
     //console.log('stereo.click',$(this).val());
     module.setseparation($(this).val());
   });
-
+  */
   console.log('ready');  
 });
 
@@ -92,11 +102,11 @@ function patSeqTable(){
   htm.push("<table id='patseq' class='table table-condensed table-hover'>");
   htm.push("<thead>");
   //htm.push("<th>#</th>");
-  htm.push("<th>Pattern</th>");
+  htm.push("<th>Pat.</th>");
   htm.push("</thead>");
   htm.push("<tbody>");
   for(var i=0;i<128;i++){
-    if(i>1&&module.patterntable[i]<1)continue;
+    if(i>0&&module.patterntable[i]<1)continue;
     htm.push("<tr id="+i+">");
     htm.push("<td>"+module.patterntable[i]);
   }
@@ -212,9 +222,9 @@ module.onTick=function(){
 
   var row=[];
   
-  $('#pat').html(module.position+"::"+module.patterntable[module.position]+"::"+i);
-  $('#bpm').html("Bpm:"+module.bpm);
-  $('#spd').html("Spd:"+module.speed);
+  $('#position').html(module.position+"::"+module.patterntable[module.position]+"::"+i);
+  //$('#bpm').html("Bpm:"+module.bpm);
+  //$('#spd').html("Spd:"+module.speed);
 
   var samples=[];
   for(c=0;c<this.channels;c++) {

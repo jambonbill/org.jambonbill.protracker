@@ -1,6 +1,7 @@
 
 nice mods
 ---------------------------
+mods/maf-inspecteur-g.mod
 mods/flite-interchip.mod
 mods/heatbeat-intromuz7.mod
 mods/goto8o-nes_mes2.mod
