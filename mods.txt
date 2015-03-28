@@ -1,13 +1,17 @@
 
 nice mods
 ---------------------------
+mods/ interchip ?? ->italo disco feeling
 mods/maf-inspecteur-g.mod
 mods/flite-interchip.mod
 mods/heatbeat-intromuz7.mod
 mods/goto8o-nes_mes2.mod
+mods/ ?? 2MuchPressureMix
+
 
 bugs
 -----------------------------------------------------------------
 mods/dsx-nike1.mod -> do not register the onPatternChange event !
 mods/reflex-bubble_bobble.mod -> slow-down/crash on pattern 4
 mods/flite-interchip.mod ->  pattern 3
+

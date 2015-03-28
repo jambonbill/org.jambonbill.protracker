@@ -5,161 +5,53 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Protracker module player for Web Audio</title>
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
-<link rel="stylesheet" href="protracker.css">
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" href="css/font-awesome.min.css">
+<link rel="stylesheet" href="css/protracker.css">
 </head>
 <body>
-
-
 <nav class="navbar navbar-inverse navbar-fixed-top">
   <div class="container">
     <div class="navbar-brand"><a href="#" id='title' download>protracker</a></div>
-    <span id='position'>0:0:00</span>
-    
-    
-    <!--<p class="navbar-text navbar-right" id='right'></p>-->
-    
+    <span id='position'>0:0:00</span>   
     <div class="btn-group" role="group">
       <button type="button" class="btn btn-sm btn-default navbar-btn" id='btn_play'><i class='fa fa-play'></i></button>
-      <button type="button" class="btn btn-sm btn-default navbar-btn" id='btn_stop'><i class='fa fa-stop'></i></button>
     </div>
-
-  <div class="btn-group pull-right" role="group">
-    <button type="button" class="btn btn-sm btn-default" id='btn_load'><i class='fa fa-retweet'></i></button>
-    <button type="button" class="btn btn-sm btn-default" id='btn_open'><i class='fa fa-folder-open'></i></button>
-    <button type="button" class="btn btn-sm btn-default" id='btn_favorite'><i class='fa fa-star'></i></button>
-    <button type="button" class="btn btn-sm btn-default" id='btn_download'><i class='fa fa-download'></i></button>
-    <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#myModal"><i class='fa fa-question'></i></button>
-  </div>
-
+    <div class="btn-group pull-right" role="group">
+      <button type="button" class="btn btn-sm btn-default navbar-btn" id='btn_load'><i class='fa fa-retweet'></i></button>
+      <button type="button" class="btn btn-sm btn-default navbar-btn" id='btn_open'><i class='fa fa-folder-open'></i></button>
+      <button type="button" class="btn btn-sm btn-default navbar-btn" id='btn_favorite'><i class='fa fa-star'></i></button>
+      <button type="button" class="btn btn-sm btn-default navbar-btn" data-toggle="modal" data-target="#myModal"><i class='fa fa-question'></i></button>
+    </div>
   </div>
 </nav>
-
-
 <div class='container'>
-<!--
-<nav>
-  <ul class="pagination pagination-sm">
-    <li>
-      <a href="#" aria-label="Previous">
-        <span aria-hidden="true">&laquo;</span>
-      </a>
-    </li>
-    <li><a href="#">1</a></li>
-    <li><a href="#">2</a></li>
-    <li><a href="#">3</a></li>
-    <li><a href="#">4</a></li>
-    <li><a href="#">5</a></li>
-    <li>
-      <a href="#" aria-label="Next">
-        <span aria-hidden="true">&raquo;</span>
-      </a>
-    </li>
-  </ul>
-</nav>
--->
-
-<div class="form-inline">
-   
-
-  
-<!--  
-  <div class="input-group">
-    <div class="input-group-addon input-sm" id='pat'>Pat</div>
-    <div class="input-group-addon input-sm" id='bpm'>Bpm</div>
-    <div class="input-group-addon input-sm" id='spd'>Spd</div>
+  <div class="row">
+    <div class="col-xs-1" id='patterns'>Patterns</div>
+    <div class="col-xs-8" id='tracks'>Tracks</div>
+    <div class="col-xs-2" id='samples'>Instruments</div>
   </div>
-
-  <div class="btn-group" data-toggle="buttons">
-    <label class="btn btn-sm btn-default active">
-      <input type="radio" name="amigatype" id="option1" value='PAL' autocomplete="off" checked> PAL
-    </label>
-    <label class="btn btn-sm btn-default">
-      <input type="radio" name="amigatype" id="option2" value='NTSC' autocomplete="off"> NTSC
-    </label>
-  </div>
-
-  <div class="btn-group" data-toggle="buttons">
-    <label class="btn btn-sm btn-default active">
-      <input type="radio" name="stereo" id="option1" value=0 autocomplete="off" checked> Paula
-    </label>
-    <label class="btn btn-sm btn-default">
-      <input type="radio" name="stereo" id="option2" value=1 autocomplete="off"> Better
-    </label>
-    <label class="btn btn-sm btn-default">
-      <input type="radio" name="stereo" id="option3" value=2 autocomplete="off"> Mono
-    </label>
-  </div>
--->
-
-
 </div>
-
-
-<div class="row">
-  <div class="col-xs-1" id='patterns'>.col-md-6</div>
-  <div class="col-xs-8" id='more'>.col-md-6</div>
-  <div class="col-xs-3" id='samples'>.col-md-6</div>
-</div>
-
-
-
-
-
 
 <!-- Modal Window -->
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal fade" id="modalwindow" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
         <h4 class="modal-title" id="myModalLabel">Protracker commands</h4>
       </div>
-      <div class="modal-body">
-        <pre>
-0 - Normal play or Arpeggio             0xy : x-first halfnote add, y-second
-1 - Slide Up                            1xx : upspeed
-2 - Slide Down                          2xx : downspeed
-3 - Tone Portamento                     3xx : up/down speed
-4 - Vibrato                             4xy : x-speed,   y-depth
-5 - Tone Portamento + Volume Slide      5xy : x-upspeed, y-downspeed
-6 - Vibrato + Volume Slide              6xy : x-upspeed, y-downspeed
-7 - Tremolo                             7xy : x-speed,   y-depth
-9 - Set SampleOffset                    9xx : offset (23 -> 2300)
-A - VolumeSlide                         Axy : x-upspeed, y-downspeed
-B - Position Jump                       Bxx : songposition
-C - Set Volume                          Cxx : volume, 00-40
-D - Pattern Break                       Dxx : break position in next patt
-F - Set Speed                           Fxx : speed (00-1F) / tempo (20-FF)
-E9- Retrig Note                         E9x : retrig from note + x vblanks
-
-Other Exx commands:
--------------------
-E00/1=filter on/off - E1x/2x=FineSlide Up/Down - E30/1=tonep ctrl off/on
-E40/1/2=Vib Waveform sine/rampdown/square, E70/1/2=Tremolo Waveform
-E5x=set loop point,E6x=jump to loop+play x times
-EAx/EBx=Fine volslide up/down
-ECx/EDx=notecut after x vblanks/notedelay by x vblankss
-        </pre>
-      </div>
+      <div class="modal-body"></div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-
       </div>
     </div>
   </div>
 </div>
 
-
-
-
 <script type="text/javascript" src="js/jquery.min.js"></script>
 <script type="text/javascript" src="js/jquery-ui.js"></script>
-<!-- Latest compiled and minified JavaScript -->
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
-
+<script src="js/bootstrap.min.js"></script>
 <script type="text/javascript" src="js/pt.js"></script>
 <script src='js/interface.js'></script>
-</script>
+<!-- Hello you :) -->

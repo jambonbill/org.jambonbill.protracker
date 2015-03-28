@@ -54,24 +54,34 @@ EEx/EFx=PatternDelay by x notes/Invert loop, x=speed
 
 
 // TODO //
-1) Lien download sur le nom du module
-2) Afficher la position du player dans la barre de navigation
-3) Faire une boite protracker commands un peu plus jolie
-4) Afficher la liste des modules
+-----------------------------------------------------------
+0) Faire une belle modal window pour charger les fichiers
 
-- Boutons dans la barre du haut
-- Loop a la fin du morceau (au lieu de stop)
-- Suivre la progression du pattern en mode lecture
-
-- Mute track
-
-- Select instrument -> show sample data
-- Gerer les favoris en utilisant le localstorage
+x) Gerer les favoris en utilisant le localstorage
 	-> if(typeof(Storage) !== "undefined") {
 	-> localStorage["playlist"]=JSON.stringify(playlist);
+
+
+1) Lien download sur le nom du module
+3) Faire une boite protracker commands un peu plus jolie
+
+4) Basic keyboard hooks 
+   Esc -> stop
+   Spacebas -> Play/Pause
+
+
+- Select instrument -> show sample data
 
 - Responsive design
 
 
 // DONE //
-...
+---------------------------------------------------
+- Mute tracks
+
+2) Afficher la position du player dans la barre de navigation
+
+4) Afficher la liste des modules
+5) Loop a la fin du morceau (au lieu de stop)
+6) Suivre la progression du pattern en mode lecture
+- Boutons dans la barre du haut

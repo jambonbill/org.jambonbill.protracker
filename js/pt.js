@@ -89,6 +89,7 @@ function Protracker()
 
   this.syncqueue=[];
 
+  this.onLoad=function(){};
   this.onReady=function(){};
   this.onPlay=function(){};
   this.onStop=function(){};
@@ -410,6 +411,7 @@ Protracker.prototype.initialize = function()
     this.channel[i].vibratodepth=0
     this.channel[i].vibratopos=0;
     this.channel[i].vibratowave=0;
+    this.channel[i].muted=false;//jambon
   }
   this.vu=new Array();
 }
@@ -419,7 +421,8 @@ Protracker.prototype.initialize = function()
 // load module from url into local buffer
 Protracker.prototype.load = function(url)
 {
-    console.log("Protracker.prototype.load",url);
+    //console.log("Protracker.prototype.load",url);
+    this.onLoad();    
     this.playing=false; // a precaution
 
     this.url=url;
@@ -609,7 +612,8 @@ Protracker.prototype.advance=function(mod) {
       mod.position=0;
     } else {
       this.endofsong=true;
-      mod.stop();
+      //mod.stop();
+      mod.position=0;//loop
     }
     return;
   }
@@ -643,6 +647,9 @@ Protracker.prototype.mix = function(ape) {
       var och=0;
       for(var ch=0;ch<mod.channels;ch++)
       {
+        //muted
+        if(mod.channel[ch].muted)continue;
+
         // calculate playback position
         p=mod.patterntable[mod.position];
         pp=mod.row*4*mod.channels + ch*4;
@@ -673,6 +680,7 @@ Protracker.prototype.mix = function(ape) {
           }
         }
         mod.channel[ch].voiceperiod=mod.channel[ch].period;
+        
         
         // kill empty samples
         if (!mod.sample[mod.channel[ch].sample].length) mod.channel[ch].noteon=0;

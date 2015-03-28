@@ -1,71 +1,104 @@
-var timer;
-var filename;
 var module=new Protracker();
 module.setseparation(1);
 
-$(function(){
-  module.setautostart(true);  
-  $.ajax({url: "ctrl.php", success: function(fn){
-        filename=fn;
-        //$('#status').val("Loading "+fn);
-        module.load(fn);
-        
-  }});
 
+$(function(){
+  
+  if(typeof(Storage) !== "undefined"){
+    try{
+      var favs=JSON.parse(localStorage["favorites"]);
+      console.log("favorites",favs);
+    }
+    catch(e){
+      console.log("localStorage favorites init");
+      localStorage["favorites"]=JSON.stringify([]);
+      favs=[];
+    }
+  }
+
+  module.setautostart(true);   
   $('#btn_play').click(function(){
-    drawPattern(module,module.patterntable[module.position]);
-    module.play();
+    if(module.playing){
+      module.stop();
+    }else{
+      drawPattern(module,module.patterntable[module.position]);
+      module.play();
+    }
   });
 
   $('#btn_stop').click(function(){module.stop();});
   $('#btn_back').click(function(){module.jump(-1);});
   $('#btn_frwd').click(function(){module.jump(1);});
-  $('#btn_load').click(function(){
-    $.ajax({url: "ctrl.php", success: function(fn){
-      filename=fn;
-      //$('#status').val("Loading "+fn);
-      module.load(fn);
-    }});
-  });
-
+  $('#btn_load').click(function(){load_random_module();});
   $('#btn_open').click(function(){
-    module.stop();
-    var url=prompt("Enter module path",filename);
-    if(url){
-      
-      module.load(url);
-      module.setautostart(true);
-    }
+    var r=$.ajax({
+        type: "POST",
+        url: "ctrl.php",
+        dataType: "json",
+        data: {'do':'list'}
+    });
+
+    r.done(function(o){
+        var htm=[];
+        htm.push("<table id='files' class='table table-condensed table-hover'>");
+        htm.push("<thead>");
+        htm.push("<th>Filename</th>");
+        htm.push("</thead>");
+        htm.push("<tbody>");
+        $.each(o,function(k,f){
+          //console.log(f);
+          htm.push("<tr title='"+f+"'><td>"+f);
+        });
+        htm.push("</tbody>");
+        htm.push("</table>");
+        $('#tracks').html(htm.join(''));
+        $('#files tr').click(function(t){
+          console.log(t.currentTarget.title);
+          module.load("mods/"+t.currentTarget.title);
+        });
+    });
+
+    r.fail(function(a,b,c){
+        console.log("Error",a,b,c);
+    });
   });
 
   $('#btn_favorite').click(function(){
-    console.log('favorite');
+    console.log('favorite ',module.url);
+    if(typeof(Storage) !== "undefined"){
+      var favs=JSON.parse(localStorage["favorites"]);
+      $.each(favs,function(i,file){
+        if(file==module.url)return false;//alreadey in
+      });
+      favs.push(module.url);
+      localStorage["favorites"]=JSON.stringify(favs);
+    }else{
+      console.log("localStorage error");
+    }
   });
-  /*
-  $('#btn_download').click(function(){
-    console.log('download '+filename);
-    $.ajax({url: "ctrl.php?download", success: function(fn){
-      filename=fn;
-      $('#status').val("Loading "+fn);
-      module.load(fn);
-    }});
-
-  });
-
-  $("input[name='amigatype']").change(function(){
-    //console.log('amigatype.click change',$(this).val());
-    if($(this).val()=="PAL")module.setamigatype(true); else module.setamigatype(false);
-  });
-  
-  $("input[name='stereo']").change(function(){
-    //console.log('stereo.click',$(this).val());
-    module.setseparation($(this).val());
-  });
-  */
-  console.log('ready');  
+  console.log('ready');
+  load_random_module();
 });
 
 
+function load_random_module(){
+  var r=$.ajax({
+        type: "POST",
+        url: "ctrl.php",
+        dataType: "json",
+        data: {'do':'randmod'}
+    });
+    r.done(function(o){
+        filename=o.filename;
+        module.load(o.filename);
+    });
+    r.fail(function(a,b,c){
+        console.log("Error",a,b,c);
+    });
+}
+
+
+//draw the given pattern (module,pattern_number)
 function drawPattern(m,p){
   
   var pattern=[];
@@ -73,13 +106,15 @@ function drawPattern(m,p){
   var pd="<table id='tracks' class='table table-condensed table-hover'>";
   pd+="<thead>";
   pd+="<th>#</th>";
-  for(c=0;c<m.channels;c++)pd+="<th style='text-align:center'>Chn#"+(c+1)+"</th>";
+  for(c=0;c<m.channels;c++){
+    if(m.channel[c]&&m.channel[c].muted)pd+="<th style='text-align:center' id="+c+" class='text-muted'>Chn#"+(c+1)+"</th>";
+    else pd+="<th style='text-align:center' id="+c+">Chn#"+(c+1)+"</th>";
+  }
   pd+="</thead>";
 
   for(i=0; i<64; i++) {
-    
     pp=i*4*m.channels;//pointer
-    pd+="<tr id=pos"+i+">";
+    pd+="<tr id=pos_"+i+">";
     pd+="<td>"+hb(i);//row
     for(c=0;c<m.channels;c++) {
       var note=m.note[p][i*m.channels+c];
@@ -87,12 +122,24 @@ function drawPattern(m,p){
       var cmd=m.pattern[p][pp+2]&0x0f;
       var cmdval=m.pattern[p][pp+3];
       var cell=notef2(note, smpl, cmd, cmdval, m.channels);
-      pd+="<td style='text-align:center'>"+cell;
+      //console.log(m.channel[c]);
+      if(m.channel[c] && m.channel[c].muted==true)pd+="<td style='text-align:center' class='text-muted'>"+cell;
+      else pd+="<td style='text-align:center'>"+cell;
+      //pd+="<td style='text-align:center'>"+cell;
       pp+=4;
     }
   }
   pd+="</table>\n";
-  $("#more").html(pd);
+  
+  $("#tracks").html(pd);
+
+  // mute/unmute track
+  $("#tracks th").click(function(t){
+    ch=t.currentTarget.id;
+    //console.log("mute channel #"+ch);
+    module.channel[ch].muted=!module.channel[ch].muted;//toggle mute
+    drawPattern(module,module.position); 
+  });
 }
 
 
@@ -101,13 +148,14 @@ function patSeqTable(){
   var htm=[];
   htm.push("<table id='patseq' class='table table-condensed table-hover'>");
   htm.push("<thead>");
-  //htm.push("<th>#</th>");
+  htm.push("<th>#</th>");
   htm.push("<th>Pat.</th>");
   htm.push("</thead>");
   htm.push("<tbody>");
-  for(var i=0;i<128;i++){
-    if(i>0&&module.patterntable[i]<1)continue;
-    htm.push("<tr id="+i+">");
+  for(var i=0;i<module.songlen;i++){//todo, find the end of the module...
+    //if(i>1&&module.patterntable[i]==0)continue;
+    htm.push("<tr id=patseq_"+i+">");
+    htm.push("<td>"+i);
     htm.push("<td>"+module.patterntable[i]);
   }
   //
@@ -117,8 +165,7 @@ function patSeqTable(){
 }
 
 //compute a html sample table
-function sampleTable()
-{
+function sampleTable(){
   var htm=[];
   htm.push("<table id='samples' class='table table-condensed table-hover'>");
   htm.push("<thead>");
@@ -134,11 +181,11 @@ function sampleTable()
   var totalbytes=0;
   var totalsamples=0;
   for(var i=0;i<31;i++){
-    if(module.sample[i].length<1)continue;
+    //if(module.sample[i].length<1)continue;
     totalsamples++;
     totalbytes+=module.sample[i].length;
     htm.push("<tr id='smpl_"+i+"'>");
-    htm.push("<td>"+(i+1));
+    htm.push("<td>"+hb(i+1));
     //htm.push("<td>"+module.sample[i].name);
     htm.push("<td style='text-align:right'>"+module.sample[i].length);
     //htm.push("<td>"+module.sample[i].finetune);
@@ -156,7 +203,7 @@ function sampleTable()
   htm.push("<td>"+totalsamples+" sample(s)");
   //htm.push("<td style='text-align:right'><b>Total bytes :");
   htm.push("<td style='text-align:right'><b>"+totalbytes+"b");
-  htm.push("<td><td>");
+  htm.push("<td></td>");
   htm.push("</tr>");
   htm.push("</tfoot>");
   htm.push("</table>");
@@ -165,93 +212,89 @@ function sampleTable()
 
 
 
-//stats
-/*
-var samples=[];
-var notes=[];
-var chords=[];
-*/
+// events
+// events
+// events
+module.onLoad=function(){
+    $('#title').html("Loading...");
+      $('#position').html(this.filename);
+
+    $("#patterns").html("");
+    $("#tracks").html("please wait");
+    $("#samples").html("gnn...");
+}
 
 module.onReady=function() {  
     
-    //console.log(this.title);
+    document.title=this.title;
     $('#title').html("<span title='"+filename+"'>"+this.title+"</span>");
-
     $("#patterns").html(patSeqTable());
-    //$("#more").html("<pre>"+pdata+"</pre>");
+    
+    //mark as selected the drawn patten
+    $("#patseq tr").removeClass("selected");
+    $("#patseq_"+this.position).addClass("selected");
+
     drawPattern(module,0);
     $("#samples").html(sampleTable());
-    
     $("#patseq tr").click(function(t){
-      var id=t.currentTarget.id;
-      var pattern=module.patterntable[id];
-      this.style.backroundColor="red";
-      
-      console.log("Goto position "+id, pattern);
-      module.position=id;
-      drawPattern(module,module.patterntable[id]);
+      //var id=t.currentTarget.id;
+      //var pattern=module.patterntable[(t.currentTarget.rowIndex-1)];
+      $('#patseq tr').removeClass("selected");
+      $(t.currentTarget).addClass("selected");//ok?     
+      //console.log("Goto position "+id, "PATTERN:"+pattern,t.currentTarget.rowIndex);
+      module.position=(t.currentTarget.rowIndex-1);
+      drawPattern(module,module.patterntable[module.position]);
     });
 
     $("#samples tr").click(function(t){
       var id=t.currentTarget.id;
       console.log("samples tr click",id);
+      $("#samples tr").removeClass("selected"); 
+      $("#"+id).addClass("selected");
     });
-    
-    //console.log("module ready");
-    //console.log(json);
-    //$('#status').val("module ready");
-  };
-
-
-
-
-
-
-
-// events
-// events
-// events
+};
 
 module.onTick=function(){
-  //console.log('tick++');
+  //console.log('onTick',module.row);
   //$('#status').val("Pattern: "+module.position +" - Step:"+ module.row);
   //var p=module.position;
-  var p=module.patterntable[module.position];
-  var i=module.row;
+  var p=this.patterntable[this.position];
+  var i=this.row;
+  if(i==64)i==0;
   var pp=i*4*this.channels;
 
   var row=[];
   
-  $('#position').html(module.position+"::"+module.patterntable[module.position]+"::"+i);
-  //$('#bpm').html("Bpm:"+module.bpm);
-  //$('#spd').html("Spd:"+module.speed);
-
+  $('#position').html(this.position+"::"+this.patterntable[this.position]+"::"+i);
+  $('#tracks tr').removeClass("selected");
+  $('#pos_'+this.row).addClass("selected");
+ 
+  $('#samples tr').removeClass("selected");
+  
   var samples=[];
   for(c=0;c<this.channels;c++) {
-    var note=this.note[p][i*this.channels+c];
-    var smpl=(this.pattern[p][pp+0]&0xf0 | this.pattern[p][pp+2]>>4);
-    
-    if(note)samples.push(smpl);
-    //var cell=notef2(this.note[p][i*this.channels+c], (this.pattern[p][pp+0]&0xf0 | this.pattern[p][pp+2]>>4), this.pattern[p][pp+2]&0x0f, this.pattern[p][pp+3], this.channels);
-    //row.push(cell);
+    //var note=this.note[p][i*this.channels+c];
+    var smpl=(this.pattern[p][pp+0]&0xf0 | this.pattern[p][pp+2]>>4); 
+    $("#smpl_"+(smpl-1)).addClass("selected");
     pp+=4;
   }
-
-  //console.log("#"+i,$.unique(samples));
-  /*
-  $.each($.unique(samples),function(d){
-    console.log("sample:"+d);
-  });
-  */
 }
 
 module.onLoop=function(){
-  console.log("loop");
+  console.log("loop at "+this.position);
+    //mark as selected the drawn patten
+  $("#patseq tr").removeClass("selected");
+  $("#patseq_"+this.position).addClass("selected");
 }
 
 module.onPatternChange=function(){
-  console.log("pattern change : "+module.position+"::"+module.patterntable[module.position]);
+  //console.log("newposition : "+newposition);
+  //console.log("pattern change : "+module.position+"::"+module.patterntable[module.position],this.row);
   drawPattern(module,module.patterntable[module.position]);
+  //select the correct pattern
+  //mark as selected the drawn patten
+  $("#patseq tr").removeClass("selected");
+  $("#patseq_"+module.position).addClass("selected");
 }
 
 module.onStop=function(){ 
@@ -262,76 +305,38 @@ module.onStop=function(){
 
 
 
-/*
-function play(){
-  console.log(module.signature);
-  console.log('module.sample',module.sample);
-  console.log('module.patterns',module.patterns,module.pattern);
-  
-  for(var i=0;i<31;i++){
-    console.log(module.sample[i].name);
+//show the list of favorite tracks in the modal window
+function showFavorites(){
+  var htm=[];
+  if(typeof(Storage) !== "undefined"){
+      var favs=JSON.parse(localStorage["favorites"]);
+      htm.push("<table class='table table-condensed table-hover'>");
+      htm.push("<thead></thead>");
+      $.each(favs,function(i,file){
+        htm.push("<tr>");
+        htm.push("<td>"+file);
+      });
+      htm.push("</table>");
+  } else {
+    console.log("ben la jean claude t'es dans la merde");
   }
-  module.setseparation(0);//0,1,2
-  module.play();
-}
-*/
-
-
-function showPatterns(){
-  var txt='';
-  console.log('module.patterns',module.patterns,module.pattern);
-  var pdata="";
   
-  for(p=0;p<module.patterns;p++) {
-    var pp, pd="<div class=\"patterndata\" id=\"pattern"+hb(p)+"\">";
-    for(i=0; i<12; i++) pd+="\n";
-    for(i=0; i<64; i++) {
-      pp=i*4*module.channels;
-      pd+="<span class=\"patternrow\" id=\"pattern"+hb(p)+"_row"+hb(i)+"\">"+hb(i)+"|";
-      for(c=0;c<module.channels;c++) {
-        pd+=notef(module.note[p][i*module.channels+c], (module.pattern[p][pp+0]&0xf0 | module.pattern[p][pp+2]>>4), module.pattern[p][pp+2]&0x0f, module.pattern[p][pp+3], module.channels);
-        pp+=4;
-      }
-      pd+="</span>\n";
-    }
-    for(i=0; i<24; i++) pd+="\n";
-    pdata+=pd+"</div>";
-  }
-  return pdata;
+  $('#modalwindow .modal-title').html("Favorites");
+  $('#modalwindow .modal-body').html(htm.join(''));
+  $('#modalwindow').modal(true);
+
 }
 
-
-var notelist=new Array("C-", "C#", "D-", "D#", "E-", "F-", "F#", "G-", "G#", "A-", "A#", "B-");
-
-function notef(n,s,c,d,cc)
-{
-  if (cc<8)
-    return (n ? ("<span class=\"note\">"+notelist[n%12]+Math.floor(1+n/12)+" </span>") : ("... "))+
-      (s ? ("<span class=\"sample\">"+hb(s)+"</span> ") : (".. "))+
-      "<span class=\"command\">"+c.toString(16)+hb(d)+"</span>|";
-  if (cc<12)
-    return (n ? ("<span class=\"note\">"+notelist[n%12]+Math.floor(1+n/12)+"</span>") : ("..."))+
-      (s ? ("<span class=\"sample\">"+hb(s)+"</span>") : (".."))+
-      "<span class=\"command\">"+c.toString(16)+hb(d)+"</span>|";
-  return (n ? ("<span class=\"note\">"+notelist[n%12]+Math.floor(1+n/12)+"</span>") : 
-                (s ? (".<span class=\"sample\">"+hb(s)+"</span>") :
-                (c&d ? ("<span class=\"command\">"+c.toString(16)+hb(d)+"</span>"):("...")))
-         );
-}
-
+var notelist=["C-", "C#", "D-", "D#", "E-", "F-", "F#", "G-", "G#", "A-", "A#", "B-"];
 //Note, Sample, Command, d?, ChannelCount
 function notef2(n,s,c,d,cc)
 {
-  //console.log('notef2',n,s,c,d,cc);
-  
   var note=(n ? (notelist[n%12]+Math.floor(1+n/12)) : ("..."));
   var smpl=(s ? (hb(s)) : (".."));
   var cmd=c.toString(16)+hb(d);
   if(cmd=='000')cmd='...';
   return note+" "+smpl+" "+cmd;
 }
-
-
 
 function hb(n)//to hex
 {
