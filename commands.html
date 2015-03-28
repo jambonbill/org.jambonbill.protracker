@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Protracker module player for Web Audio</title>
+<!-- Latest compiled and minified CSS -->
+<!-- 
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+-->
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" href="css/font-awesome.min.css">
+<link rel="stylesheet" href="css/protracker.css">
+</head>
+<body>
+
+
+
+<div class='container'>
+
+<table class='table table-condensed table-bordered'>
+<tr><td><b>0</b> Arpeggio                           <td>0xy : x-first halfnote add, y-second
+<tr><td><b>1</b> Slide Up                           <td>1xx : upspeed
+<tr><td><b>2</b> Slide Down                         <td>2xx : downspeed
+<tr><td><b>3</b> Tone Portamento                    <td>3xx : up/down speed
+<tr><td><b>4</b> Vibrato                            <td>4xy : x-speed,   y-depth
+<tr><td><b>5</b> Tone Portamento + Vol. Slide     <td>5xy : x-upspeed, y-downspeed
+<tr><td><b>6</b> Vibrato + Vol. Slide             <td>6xy : x-upspeed, y-downspeed
+<tr><td><b>7</b> Tremolo                            <td>7xy : x-speed,   y-depth
+<tr><td><b>9</b> Set SampleOffset                   <td>9xx : offset (23 -> 2300)
+<tr><td><b>A</b> VolumeSlide                        <td>Axy : x-upspeed, y-downspeed
+<tr><td><b>B</b> Position Jump                      <td>Bxx : songposition
+<tr><td><b>C</b> Set Volume                         <td>Cxx : volume, 00-40
+<tr><td><b>D</b> Pattern Break                      <td>Dxx : break position in next patt
+<tr><td><b>F</b> Set Speed                          <td>Fxx : speed (00-1F) / tempo (20-FF)
+<tr><td><b>E9</b> Retrig Note                       <td>E9x : retrig from note + x vblanks
+
+</table>
+
+<pre>
+Other Exx commands:
+-------------------
+E00/1=filter on/off - E1x/2x=FineSlide Up/Down - E30/1=tonep ctrl off/on
+E40/1/2=Vib Waveform sine/rampdown/square, E70/1/2=Tremolo Waveform
+E5x=set loop point,E6x=jump to loop+play x times
+EAx/EBx=Fine volslide up/down
+ECx/EDx=notecut after x vblanks/notedelay by x vblankss
+</pre>
+
+
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript" src="js/jquery-ui.js"></script>
+<!-- Latest compiled and minified JavaScript -->
+<!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script> -->
+<script src="js/bootstrap.min.js"></script>
+
+<script type="text/javascript" src="js/pt.js"></script>
+<script src='js/interface.js'></script>
+</script>
